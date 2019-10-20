@@ -11,8 +11,8 @@
 
 #checkerboard {
   display: grid;
-  grid-template-columns: repeat(4, 30px);
-  grid-template-rows: repeat(16, 30px);
+  grid-template-columns: repeat(9, 30px);
+  grid-template-rows: repeat(9, 30px);
 }
 
 .item {
@@ -39,4 +39,12 @@
 
 .App-link {
   color: #09d3ac;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
