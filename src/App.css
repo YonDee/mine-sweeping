@@ -1,5 +1,25 @@
 .App {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#checkerboard {
+  display: grid;
+  grid-template-columns: repeat(4, 30px);
+  grid-template-rows: repeat(16, 30px);
+}
+
+.item {
+  border: 1px solid #e5e4e9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .App-logo {
