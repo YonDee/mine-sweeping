@@ -1,5 +1,5 @@
 import React from 'react';
-import './landmine.css';
+import './css/landmine.css';
 
 class Landmine extends React.Component {
   constructor(props){
