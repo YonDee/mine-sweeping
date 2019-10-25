@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import './font_1313421_br608omz75m/iconfont.css'
+import Landmine from './landmine'
 
 class App extends React.Component{
   constructor(props){
@@ -12,12 +13,13 @@ class App extends React.Component{
     this.handleClick = this.handleClick.bind(this)
   }
 
-  renderItem(i){
-  }
-
   handleClick(e, i){
     let grids = this.state.grids.slice();
-    grids[i] = <i className="iconfont iconzhadan"></i>
+    grids[i] = (
+      <div className="grid-item">
+        <Landmine />
+      </div>
+    );
     this.setState({
       grids: grids
     })
