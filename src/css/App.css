@@ -16,6 +16,16 @@
   grid-template-rows: repeat(9, 30px);
 }
 
+#board {
+  display: grid;
+}
+
+#checkerboard {
+  display: grid;
+  grid-template-columns: repeat(9, 30px);
+  grid-template-rows: repeat(9, 30px);
+}
+
 .item {
   border: 1px solid #e5e4e9;
   display: flex;
