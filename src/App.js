@@ -2,6 +2,7 @@ import React from 'react';
 import './css/App.css';
 import './font_1313421_br608omz75m/iconfont.css'
 import Landmine from './landmine'
+import Information from './information'
 
 class App extends React.Component{
   constructor(props){
@@ -14,6 +15,9 @@ class App extends React.Component{
   }
 
   handleClick(e, i){
+    this.setState({
+      currentIndex: i
+    })
     let grids = this.state.grids.slice();
     grids[i] = (
       <div className="grid-item">
@@ -43,7 +47,7 @@ class App extends React.Component{
         <div id="checkerboard">
           {items}
         </div>
-        <span><label>当前点击的组件：</label>{ this.state.currentIndex }</span>
+        <Information index={this.state.currentIndex} />
       </div>
     );
   }

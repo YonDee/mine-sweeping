@@ -4,19 +4,6 @@ import './css/landmine.css';
 class Landmine extends React.Component {
   constructor(props){
     super(props);
-    this.state = {
-      baozhaStyle: {
-        color: 'red',
-        fontSize: '40px',
-        position: 'absolute',
-        zIndex: '1'
-      },
-      zhadanStyle: {
-        position: 'absolute',
-        zIndex: '2',
-        fontSize: '25px'
-      }
-    }
   }
   render() {
     return (
