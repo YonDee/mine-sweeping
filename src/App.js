@@ -14,11 +14,17 @@ class App extends React.Component{
       grids: Array(100).fill(<div className="full-squares"></div>),
       columns: 10,
       rows: 10,
-      bombs: 0
+      bombs: 0,
+      gridsBoard: {
+        columns: 10,
+        rows: 10,
+        bombs: 0
+      }
     }
     this.handleClick = this.handleClick.bind(this)
     this.columnsChange = this.columnsChange.bind(this)
     this.rowsChange = this.rowsChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
   }
 
   handleClick(e, i){
@@ -37,23 +43,16 @@ class App extends React.Component{
   }
 
   columnsChange(e){
-    let newRows = e.target.value <= 80 && e.target.value;
-    if(!newRows) return
-    let newColumns = e.target.value
-    let newGrids = newColumns * this.state.rows
+    let newColumns = e.target.value <= 80 && e.target.value;
     this.setState({
-      columns: newColumns,
-      grids: Array(newGrids).fill(<div className="full-squares"></div>),
+      columns: newColumns
     })
   }
 
   rowsChange(e){
     let newRows = e.target.value <= 80 && e.target.value;
-    if(!newRows) return
-    let newGrids = this.state.columns * newRows;
     this.setState({
-      rows: newRows,
-      grids: Array(newGrids).fill(<div className="full-squares"></div>),
+      rows: newRows
     })
   }
 
@@ -64,9 +63,24 @@ class App extends React.Component{
     console.log('现在有' + e.target.value + '个炸弹。')
   }
 
+  onSubmit(event){
+    // 设定 行 列 炸弹数量
+    let newGrids = this.state.columns * this.state.rows
+    let gridsBoard = {
+      columns: this.state.columns,
+      rows: this.state.columns,
+      bombs: this.state.bombs
+    }
+    this.setState({
+      gridsBoard: gridsBoard,
+      grids: Array(newGrids).fill(<div className="full-squares"></div>),
+    })
+    event.preventDefault();
+  }
+
   render(){
     let items = []
-    for(var index=0; index<this.state.columns * this.state.rows; index++){
+    for (var index = 0; index < this.state.gridsBoard.columns * this.state.gridsBoard.rows; index++) {
       const i = index;
       items.push(
         <div key={'item-' + i} className="item" onClick={(e) => this.handleClick(e, i)}>
@@ -83,10 +97,11 @@ class App extends React.Component{
           columnsChange={(e) => this.columnsChange(e)}
           rowsChange={(e) => this.rowsChange(e)}
           bombsChange={(e) => this.bombsChange(e)}
+          onSubmit={(e) => this.onSubmit(e)}
         />
         <Board
-          columns={this.state.columns}
-          rows={this.state.rows}
+          columns={this.state.gridsBoard.columns}
+          rows={this.state.gridsBoard.rows}
         >
           {items}
         </Board>
