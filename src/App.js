@@ -19,7 +19,8 @@ class App extends React.Component{
         columns: 10,
         rows: 10,
         bombs: 0
-      }
+      },
+      maxErr: false
     }
     this.handleClick = this.handleClick.bind(this)
     this.columnsChange = this.columnsChange.bind(this)
@@ -42,20 +43,21 @@ class App extends React.Component{
     })
   }
 
+  // 行
   columnsChange(e){
-    let newColumns = e.target.value <= 80 && e.target.value;
     this.setState({
-      columns: newColumns
+      columns: e.target.value
     })
   }
 
+  // 列
   rowsChange(e){
-    let newRows = e.target.value <= 80 && e.target.value;
     this.setState({
-      rows: newRows
+      rows: e.target.value
     })
   }
 
+  // 炸弹
   bombsChange(e){
     this.setState({
       bombs: e.target.value
@@ -63,18 +65,24 @@ class App extends React.Component{
     console.log('现在有' + e.target.value + '个炸弹。')
   }
 
+  // 提交自定义棋盘
   onSubmit(event){
     // 设定 行 列 炸弹数量
     let newGrids = this.state.columns * this.state.rows
-    let gridsBoard = {
-      columns: this.state.columns,
-      rows: this.state.columns,
-      bombs: this.state.bombs
+    if(this.state.columns > 80 || this.state.rows > 80){
+      this.state.maxErr = true
+    }else{
+      // 设定棋盘数组(直接可以决定展示内容)
+      let gridsBoard = {
+        columns: this.state.columns,
+        rows: this.state.columns,
+        bombs: this.state.bombs
+      }
+      this.setState({
+        gridsBoard: gridsBoard,
+        grids: Array(newGrids).fill(<div className="full-squares"></div>),
+      })
     }
-    this.setState({
-      gridsBoard: gridsBoard,
-      grids: Array(newGrids).fill(<div className="full-squares"></div>),
-    })
     event.preventDefault();
   }
 
@@ -90,22 +98,28 @@ class App extends React.Component{
     }
     return (
       <div className="App">
-        <CustomBoard
-          columns={this.state.columns}
-          rows={this.state.rows}
-          bombs={this.state.bombs}
-          columnsChange={(e) => this.columnsChange(e)}
-          rowsChange={(e) => this.rowsChange(e)}
-          bombsChange={(e) => this.bombsChange(e)}
-          onSubmit={(e) => this.onSubmit(e)}
-        />
-        <Board
-          columns={this.state.gridsBoard.columns}
-          rows={this.state.gridsBoard.rows}
-        >
-          {items}
-        </Board>
-        <Information index={this.state.currentIndex} />
+        <div className="app-body">
+          <div className="app-body-form">
+            <CustomBoard
+              columns={this.state.columns}
+              rows={this.state.rows}
+              bombs={this.state.bombs}
+              columnsChange={(e) => this.columnsChange(e)}
+              rowsChange={(e) => this.rowsChange(e)}
+              bombsChange={(e) => this.bombsChange(e)}
+              onSubmit={(e) => this.onSubmit(e)}
+            />
+            <br />
+            <span className={'err-span'}>行/列最大支持80</span>
+          </div>
+          <Board
+            columns={this.state.gridsBoard.columns}
+            rows={this.state.gridsBoard.rows}
+          >
+            {items}
+          </Board>
+          <Information index={this.state.currentIndex} />
+        </div>
       </div>
     );
   }

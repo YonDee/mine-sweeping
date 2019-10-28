@@ -16,7 +16,7 @@ class CustomBoard extends React.Component {
         <label>列数：</label>
         <input type="text" value={this.props.rows} onChange={this.props.rowsChange} />
         <br />
-        <label>地雷数：</label>
+        <label>雷数：</label>
         <input type="text" value={this.props.bombs} onChange={this.props.bombsChange}/>
         <br />
         <button onClick={this.props.onSubmit}>提交</button>
