@@ -12,6 +12,7 @@ class App extends React.Component{
     this.state = {
       currentIndex: 0,
       grids: Array(100).fill(<div className="full-squares"></div>),
+      gridsArr: [],
       columns: 10,
       rows: 10,
       bombs: 0,
@@ -33,9 +34,21 @@ class App extends React.Component{
       currentIndex: i
     })
     let grids = this.state.grids.slice();
+    const thisItem = this.state.gridsArr[i] || '';
+    let element;
+    switch (thisItem.type) {
+      case 'bomb':
+        element = <Landmine />;
+        break;
+      case 'default':
+        element = '';
+        break;
+      default:
+        break;
+    }
     grids[i] = (
       <div className="grid-item">
-        <Landmine />
+        {element}
       </div>
     );
     this.setState({
@@ -67,7 +80,7 @@ class App extends React.Component{
 
   // 提交自定义棋盘
   onSubmit(event){
-    // 设定 行 列 炸弹数量
+    // 设定 行 列 
     let newGrids = this.state.columns * this.state.rows
     if(this.state.columns > 80 || this.state.rows > 80){
       this.state.maxErr = true
@@ -87,10 +100,11 @@ class App extends React.Component{
           value: 0
         }
       });
-
+      
+      // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
       for(let i=0; i<this.state.bombs; i++){
-        let index = Math.floor(Math.random() * this.state.bombs);
+        let index = Math.floor(Math.random() * gridsCount.length);
         gridsArr[gridsCount.splice(index, 1)] = {
           type: 'bomb',
           value: 0
@@ -100,6 +114,7 @@ class App extends React.Component{
       this.setState({
         gridsBoard: gridsBoard,
         grids: Array(newGrids).fill(<div className="full-squares"></div>),
+        gridsArr: gridsArr
       })
     }
     event.preventDefault();

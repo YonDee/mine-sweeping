@@ -16,20 +16,12 @@
   padding: 10px;
 }
 
-#checkerboard {
-  display: grid;
-  grid-template-columns: repeat(9, 30px);
-  grid-template-rows: repeat(9, 30px);
-}
-
 #board {
   display: grid;
 }
 
 #checkerboard {
   display: grid;
-  grid-template-columns: repeat(9, 30px);
-  grid-template-rows: repeat(9, 30px);
 }
 
 .item {
