@@ -78,6 +78,25 @@ class App extends React.Component{
         rows: this.state.columns,
         bombs: this.state.bombs
       }
+
+      let gridsArr = Array.apply(
+        null,
+        Array(newGrids)).map(() => {
+        return {
+          type: 'default',
+          value: 0
+        }
+      });
+
+      let gridsCount = [...Array(gridsArr.length).keys()];
+      for(let i=0; i<this.state.bombs; i++){
+        let index = Math.floor(Math.random() * this.state.bombs);
+        gridsArr[gridsCount.splice(index, 1)] = {
+          type: 'bomb',
+          value: 0
+        }
+      }
+
       this.setState({
         gridsBoard: gridsBoard,
         grids: Array(newGrids).fill(<div className="full-squares"></div>),
