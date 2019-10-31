@@ -1,10 +1,10 @@
 import React from 'react';
 import './css/App.css';
 import './font_1313421_br608omz75m/iconfont.css'
-import Board from './board'
-import Landmine from './landmine'
-import Information from './information'
-import CustomBoard from './customBoard'
+import Board from './board'             //棋盘
+import Landmine from './landmine'       //炸弹
+import Information from './information' //信息组件
+import CustomBoard from './customBoard' //自定义棋盘表单组件
 
 class App extends React.Component{
   constructor(props){
@@ -12,21 +12,21 @@ class App extends React.Component{
     this.state = {
       currentIndex: 0,
       grids: Array(100).fill(<div className="full-squares"></div>),
-      gridsArr: [],
-      columns: 10,
-      rows: 10,
-      bombs: 0,
-      gridsBoard: {
+      gridsArr: [],   // 实际参考的表格数据
+      columns: 10,    // 受控组件绑定的数据 行
+      rows: 10,       // 受控组件绑定的数据 列
+      bombs: 20,
+      gridsBoard: {   // 实际应用的表格数据
         columns: 10,
         rows: 10,
-        bombs: 0
+        bombs: 20
       },
       maxErr: false
     }
     this.handleClick = this.handleClick.bind(this)
     this.columnsChange = this.columnsChange.bind(this)
     this.rowsChange = this.rowsChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   handleClick(e, i){
@@ -56,21 +56,21 @@ class App extends React.Component{
     })
   }
 
-  // 行
+  // 输入行
   columnsChange(e){
     this.setState({
       columns: e.target.value
     })
   }
 
-  // 列
+  // 输入列
   rowsChange(e){
     this.setState({
       rows: e.target.value
     })
   }
 
-  // 炸弹
+  // 输入炸弹数量
   bombsChange(e){
     this.setState({
       bombs: e.target.value
@@ -79,8 +79,8 @@ class App extends React.Component{
   }
 
   // 提交自定义棋盘
-  onSubmit(event){
-    // 设定 行 列 
+  handleSubmit(event){
+    // 设定 行 列
     let newGrids = this.state.columns * this.state.rows
     if(this.state.columns > 80 || this.state.rows > 80){
       this.state.maxErr = true
@@ -100,7 +100,7 @@ class App extends React.Component{
           value: 0
         }
       });
-      
+
       // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
       for(let i=0; i<this.state.bombs; i++){
@@ -117,7 +117,11 @@ class App extends React.Component{
         gridsArr: gridsArr
       })
     }
-    event.preventDefault();
+    event && event.preventDefault();
+  }
+
+  componentDidMount(){
+    this.handleSubmit()
   }
 
   render(){
@@ -141,7 +145,7 @@ class App extends React.Component{
               columnsChange={(e) => this.columnsChange(e)}
               rowsChange={(e) => this.rowsChange(e)}
               bombsChange={(e) => this.bombsChange(e)}
-              onSubmit={(e) => this.onSubmit(e)}
+              onSubmit={(e) => this.handleSubmit(e)}
             />
             <br />
             <span className={'err-span'}>行/列最大支持80</span>
