@@ -16,14 +16,11 @@ class App extends React.Component{
       columns: 10,    // 受控组件绑定的数据 行
       rows: 10,       // 受控组件绑定的数据 列
       bombs: 20,
-      gridsBoard: {   // 实际应用的表格数据
-        columns: 10,
-        rows: 10,
-        bombs: 20
-      },
+      gridsBoard: {}, // 实际应用的表格数据
       maxErr: false
     }
     this.handleClick = this.handleClick.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
     this.columnsChange = this.columnsChange.bind(this)
     this.rowsChange = this.rowsChange.bind(this)
     this.createGridsArr = this.createGridsArr.bind(this)
@@ -64,7 +61,7 @@ class App extends React.Component{
           alert('GAME OVER!');
           break;
         case 'default':
-          element = '';
+          element = currentItem.value > 0 && currentItem.value;
           break;
         default:
           break;
@@ -87,7 +84,7 @@ class App extends React.Component{
           {element}
         </div>
       )
-      this.state.gridsArr = [0]
+      // this.state.gridsArr = [0]
     }else{
       grids[i] = (
         <div className="grid-item">
@@ -125,20 +122,12 @@ class App extends React.Component{
   // 提交自定义棋盘
   createGridsArr(event, excludeIndex){
     // 设定 行 列
-    let newGrids = this.state.columns * this.state.rows
     if(this.state.columns > 80 || this.state.rows > 80){
       this.state.maxErr = true
     }else{
-      // 设定棋盘数组(直接可以决定展示内容)
-      let gridsBoard = {
-        columns: this.state.columns,
-        rows: this.state.columns,
-        bombs: this.state.bombs
-      }
-
       let gridsArr = Array.apply(
         null,
-        Array(newGrids)).map((item, index) => {
+        Array(this.state.columns * this.state.rows)).map((item, index) => {
         return {
           type: 'default',
           value: 0,
@@ -151,21 +140,66 @@ class App extends React.Component{
       // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
       gridsCount.splice(excludeIndex, 1)
+      const columns = this.state.columns;
       for(let i=0; i<this.state.bombs; i++){
-        let index = Math.floor(Math.random() * gridsCount.length);
-        gridsArr[gridsCount.splice(index, 1)].type = 'bomb';
+        let index = parseInt(gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1));
+        gridsArr[index].type = 'bomb';
+        // 上方
+        if (gridsArr[index - columns]) {
+          gridsArr[index - columns].value++
+          // 左上
+          if (gridsArr[index - columns - 1] && (index - columns) % columns !== 0) {
+            gridsArr[index - columns - 1].value++
+          }
+          // 右上
+          if (gridsArr[index - columns + 1] && (index - columns + 1) % columns !== 0) {
+            gridsArr[index - columns + 1].value++
+          }
+        }
+        // 下方
+        if (gridsArr[index + columns]) {
+          gridsArr[index + columns].value++
+          // 左下
+          if (gridsArr[index + columns - 1] && (index + columns) % columns !== 0) {
+            gridsArr[index + columns - 1].value++
+          }
+          // 右下
+          if (gridsArr[index + columns + 1] && (index + columns + 1) % columns !== 0) {
+            gridsArr[index + columns + 1].value++
+          }
+        }
+        // 左
+        if (gridsArr[index - 1] && (index - 1) % columns !== 9) {
+          gridsArr[index - 1].value++;
+        }
+        // 右
+        if (gridsArr[index + 1] && (index + 1) % columns !== 0) {
+          gridsArr[index + 1].value++;
+        }
       }
 
       this.setState({
-        gridsBoard: gridsBoard,
-        grids: Array(newGrids).fill(<div className="full-squares"></div>),
         gridsArr: gridsArr
       })
     }
     event && event.preventDefault();
   }
 
+  handleSubmit(event){
+    this.setState({
+      gridsBoard: {
+        columns: this.state.columns,
+        rows: this.state.rows,
+        bombs: this.state.bombs
+      },
+      grids: Array(this.state.columns * this.state.rows).fill(<div className="full-squares"></div>),
+      gridsArr: []
+    })
+    event && event.preventDefault();
+  }
+
   componentDidMount(){
+    this.handleSubmit();
     const element = document.getElementById('board');
     element.oncontextmenu = function(e) {
       e.preventDefault();
@@ -198,7 +232,7 @@ class App extends React.Component{
               columnsChange={(e) => this.columnsChange(e)}
               rowsChange={(e) => this.rowsChange(e)}
               bombsChange={(e) => this.bombsChange(e)}
-              onSubmit={(e) => this.createGridsArr(e)}
+              onSubmit={(e) => this.handleSubmit(e)}
             />
             <br />
             <span className={'err-span'}>行/列最大支持80</span>
