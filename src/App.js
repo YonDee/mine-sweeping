@@ -1,6 +1,6 @@
 import React from 'react';
 import './css/App.css';
-import './font_1313421_br608omz75m/iconfont.css'
+import './fonts/iconfont.css'
 import Board from './board'             //棋盘
 import Landmine from './landmine'       //炸弹
 import Information from './information' //信息组件
@@ -30,27 +30,43 @@ class App extends React.Component{
   }
 
   handleClick(e, i){
+    let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
+    let element; // 所操作单元格的元素JSX
+    
     this.setState({
       currentIndex: i
     })
-    let grids = this.state.grids.slice();
-    const thisItem = this.state.gridsArr[i] || '';
-    let element;
-    switch (thisItem.type) {
-      case 'bomb':
-        element = <Landmine />;
-        break;
-      case 'default':
-        element = '';
-        break;
-      default:
-        break;
+
+    if(e.button && e.button === 2){
+      // 右键处理
+      console.log('右键处理')
+      element = (
+        <div className="gird-item-box full-squares">
+          <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
+        </div>
+      );
+    }else{
+      // 左键处理
+      console.log('左键处理')
+      const thisItem = this.state.gridsArr[i] || '';
+      switch (thisItem.type) {
+        case 'bomb':
+          element = <Landmine />;
+          break;
+        case 'default':
+          element = '';
+          break;
+        default:
+          break;
+      }
     }
+
     grids[i] = (
       <div className="grid-item">
         {element}
       </div>
     );
+
     this.setState({
       grids: grids
     })
@@ -75,7 +91,6 @@ class App extends React.Component{
     this.setState({
       bombs: e.target.value
     })
-    console.log('现在有' + e.target.value + '个炸弹。')
   }
 
   // 提交自定义棋盘
@@ -122,6 +137,10 @@ class App extends React.Component{
 
   componentDidMount(){
     this.handleSubmit()
+    const element = document.getElementById('board');
+    element.oncontextmenu = function(e) {
+      e.preventDefault();
+    }
   }
 
   render(){
@@ -129,7 +148,12 @@ class App extends React.Component{
     for (var index = 0; index < this.state.gridsBoard.columns * this.state.gridsBoard.rows; index++) {
       const i = index;
       items.push(
-        <div key={'item-' + i} className="item" onClick={(e) => this.handleClick(e, i)}>
+        <div
+          key={'item-' + i}
+          className="item"
+          onClick={(e) => this.handleClick(e, i)}
+          onMouseDown={(e) => this.handleClick(e, i)}
+        >
           {this.state.grids[i]}
         </div>
       )
