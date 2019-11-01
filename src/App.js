@@ -26,10 +26,11 @@ class App extends React.Component{
     this.handleClick = this.handleClick.bind(this)
     this.columnsChange = this.columnsChange.bind(this)
     this.rowsChange = this.rowsChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.createGridsArr = this.createGridsArr.bind(this)
   }
 
   handleClick(e, i){
+    JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i);
     let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
     let element; // 所操作单元格的元素JSX
     const currentItem = this.state.gridsArr[i] || '';
@@ -103,7 +104,7 @@ class App extends React.Component{
   }
 
   // 提交自定义棋盘
-  handleSubmit(event){
+  createGridsArr(event, excludeIndex){
     // 设定 行 列
     let newGrids = this.state.columns * this.state.rows
     if(this.state.columns > 80 || this.state.rows > 80){
@@ -129,12 +130,10 @@ class App extends React.Component{
 
       // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
+      gridsCount.splice(excludeIndex, 1)
       for(let i=0; i<this.state.bombs; i++){
         let index = Math.floor(Math.random() * gridsCount.length);
-        gridsArr[gridsCount.splice(index, 1)] = {
-          type: 'bomb',
-          value: 0
-        }
+        gridsArr[gridsCount.splice(index, 1)].type = 'bomb';
       }
 
       this.setState({
@@ -147,7 +146,6 @@ class App extends React.Component{
   }
 
   componentDidMount(){
-    this.handleSubmit()
     const element = document.getElementById('board');
     element.oncontextmenu = function(e) {
       e.preventDefault();
@@ -180,7 +178,7 @@ class App extends React.Component{
               columnsChange={(e) => this.columnsChange(e)}
               rowsChange={(e) => this.rowsChange(e)}
               bombsChange={(e) => this.bombsChange(e)}
-              onSubmit={(e) => this.handleSubmit(e)}
+              onSubmit={(e) => this.createGridsArr(e)}
             />
             <br />
             <span className={'err-span'}>行/列最大支持80</span>
