@@ -32,7 +32,9 @@ class App extends React.Component{
   handleClick(e, i){
     let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
     let element; // 所操作单元格的元素JSX
-    
+    const currentItem = this.state.gridsArr[i] || '';
+    if (!currentItem) return
+
     this.setState({
       currentIndex: i
     })
@@ -40,16 +42,22 @@ class App extends React.Component{
     if(e.button && e.button === 2){
       // 右键处理
       console.log('右键处理')
-      element = (
+      if (currentItem.isOpen) return
+      element = currentItem.flag ? (
+        <div className="full-squares"></div>
+      ) : (
         <div className="gird-item-box full-squares">
           <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
         </div>
       );
+      this.state.gridsArr[i].flag = !currentItem.flag;
     }else{
       // 左键处理
       console.log('左键处理')
-      const thisItem = this.state.gridsArr[i] || '';
-      switch (thisItem.type) {
+      if(currentItem.flag){
+        return;
+      }
+      switch (currentItem.type) {
         case 'bomb':
           element = <Landmine />;
           break;
@@ -59,6 +67,7 @@ class App extends React.Component{
         default:
           break;
       }
+      this.state.gridsArr[i].isOpen = true;
     }
 
     grids[i] = (
@@ -112,7 +121,9 @@ class App extends React.Component{
         Array(newGrids)).map(() => {
         return {
           type: 'default',
-          value: 0
+          value: 0,
+          flag: false,
+          isOpen: false
         }
       });
 
