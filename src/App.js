@@ -61,6 +61,7 @@ class App extends React.Component{
       switch (currentItem.type) {
         case 'bomb':
           element = <Landmine />;
+          alert('GAME OVER!');
           break;
         case 'default':
           element = '';
@@ -71,11 +72,29 @@ class App extends React.Component{
       this.state.gridsArr[i].isOpen = true;
     }
 
-    grids[i] = (
-      <div className="grid-item">
-        {element}
-      </div>
-    );
+    if(currentItem.type === 'bomb' && e.button !== 2){
+      this.state.gridsArr.map(item => {
+        if(item.type === 'bomb'){
+          grids[item.key] = (
+            <div className="grid-item" style={item.flag ? { background: 'green' } : {}}>
+              {element}
+            </div>
+          )
+        }
+      })
+      grids[i] = (
+        <div className="grid-item" style={{background: 'red'}}>
+          {element}
+        </div>
+      )
+      this.state.gridsArr = [0]
+    }else{
+      grids[i] = (
+        <div className="grid-item">
+          {element}
+        </div>
+      );
+    }
 
     this.setState({
       grids: grids
@@ -119,12 +138,13 @@ class App extends React.Component{
 
       let gridsArr = Array.apply(
         null,
-        Array(newGrids)).map(() => {
+        Array(newGrids)).map((item, index) => {
         return {
           type: 'default',
           value: 0,
           flag: false,
-          isOpen: false
+          isOpen: false,
+          key: index
         }
       });
 
