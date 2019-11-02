@@ -173,7 +173,7 @@ class App extends React.Component{
         }
         // 左
         let leftIndex = parseInt(index) - 1;
-        if (gridsArr[leftIndex] && (leftIndex) % columns !== 9) {
+        if (gridsArr[leftIndex] && (leftIndex) % columns !== 0) {
           gridsArr[leftIndex].value++;
         }
         // 右
