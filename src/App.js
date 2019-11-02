@@ -142,39 +142,44 @@ class App extends React.Component{
       gridsCount.splice(excludeIndex, 1)
       const columns = this.state.columns;
       for(let i=0; i<this.state.bombs; i++){
-        let index = parseInt(gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1));
+        let index = gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1);
         gridsArr[index].type = 'bomb';
         // 上方
-        if (gridsArr[index - columns]) {
-          gridsArr[index - columns].value++
+        let topIndex = parseInt(index) - parseInt(columns)
+        if (gridsArr[topIndex]) {
+          gridsArr[topIndex].value++
           // 左上
-          if (gridsArr[index - columns - 1] && (index - columns) % columns !== 0) {
-            gridsArr[index - columns - 1].value++
+          let topLeftIndex = parseInt(topIndex) - 1
+          if (gridsArr[topLeftIndex] && (topIndex) % columns !== 0) {
+            gridsArr[topLeftIndex].value++
           }
           // 右上
-          if (gridsArr[index - columns + 1] && (index - columns + 1) % columns !== 0) {
-            gridsArr[index - columns + 1].value++
+          if (gridsArr[topIndex + 1] && (topIndex + 1) % columns !== 0) {
+            gridsArr[topIndex + 1].value++
           }
         }
         // 下方
-        if (gridsArr[index + columns]) {
-          gridsArr[index + columns].value++
+        let bottomIndex = parseInt(index) + parseInt(columns)
+        if (gridsArr[bottomIndex]) {
+          gridsArr[bottomIndex].value++
           // 左下
-          if (gridsArr[index + columns - 1] && (index + columns) % columns !== 0) {
-            gridsArr[index + columns - 1].value++
+          if (gridsArr[bottomIndex - 1] && (bottomIndex) % columns !== 0) {
+            gridsArr[bottomIndex - 1].value++
           }
           // 右下
-          if (gridsArr[index + columns + 1] && (index + columns + 1) % columns !== 0) {
-            gridsArr[index + columns + 1].value++
+          if (gridsArr[bottomIndex + 1] && (bottomIndex + 1) % columns !== 0) {
+            gridsArr[bottomIndex + 1].value++
           }
         }
         // 左
-        if (gridsArr[index - 1] && (index - 1) % columns !== 9) {
-          gridsArr[index - 1].value++;
+        let leftIndex = parseInt(index) - 1;
+        if (gridsArr[leftIndex] && (leftIndex) % columns !== 9) {
+          gridsArr[leftIndex].value++;
         }
         // 右
-        if (gridsArr[index + 1] && (index + 1) % columns !== 0) {
-          gridsArr[index + 1].value++;
+        let rightIndex = parseInt(index) + 1;
+        if (gridsArr[rightIndex] && (rightIndex) % columns !== 0) {
+          gridsArr[rightIndex].value++;
         }
       }
 
