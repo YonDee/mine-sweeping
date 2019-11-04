@@ -24,9 +24,11 @@ class App extends React.Component{
     this.columnsChange = this.columnsChange.bind(this)
     this.rowsChange = this.rowsChange.bind(this)
     this.createGridsArr = this.createGridsArr.bind(this)
+    this.getAroundGridIndex = this.getAroundGridIndex.bind(this)
   }
 
   handleClick(e, i){
+    console.log(this.getAroundGridIndex(i, this.state.gridsBoard.columns, this.state.gridsBoard.rows))
     JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i);
     let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
     let element; // 所操作单元格的元素JSX
@@ -58,7 +60,7 @@ class App extends React.Component{
       switch (currentItem.type) {
         case 'bomb':
           element = <Landmine />;
-          alert('GAME OVER!');
+          // alert('GAME OVER!');
           break;
         case 'default':
           element = currentItem.value > 0 && currentItem.value;
@@ -124,10 +126,11 @@ class App extends React.Component{
     // 设定 行 列
     if(this.state.columns > 80 || this.state.rows > 80){
       this.state.maxErr = true
+      console.log('超过限定行列。')
     }else{
       let gridsArr = Array.apply(
         null,
-        Array(this.state.columns * this.state.rows)).map((item, index) => {
+        Array(this.state.gridsBoard.columns * this.state.gridsBoard.rows)).map((item, index) => {
         return {
           type: 'default',
           value: 0,
@@ -139,48 +142,17 @@ class App extends React.Component{
 
       // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
+      const columns = this.state.gridsBoard.columns;
+      const rows = this.state.gridsBoard.columns;
+      const maxGrids = columns * rows;
       gridsCount.splice(excludeIndex, 1)
-      const columns = this.state.columns;
       for(let i=0; i<this.state.bombs; i++){
         let index = gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1);
+        let aroundGridIndex = this.getAroundGridIndex(index, columns, rows, maxGrids);
         gridsArr[index].type = 'bomb';
-        // 上方
-        let topIndex = parseInt(index) - parseInt(columns)
-        if (gridsArr[topIndex]) {
-          gridsArr[topIndex].value++
-          // 左上
-          let topLeftIndex = parseInt(topIndex) - 1
-          if (gridsArr[topLeftIndex] && (topIndex) % columns !== 0) {
-            gridsArr[topLeftIndex].value++
-          }
-          // 右上
-          if (gridsArr[topIndex + 1] && (topIndex + 1) % columns !== 0) {
-            gridsArr[topIndex + 1].value++
-          }
-        }
-        // 下方
-        let bottomIndex = parseInt(index) + parseInt(columns)
-        if (gridsArr[bottomIndex]) {
-          gridsArr[bottomIndex].value++
-          // 左下
-          if (gridsArr[bottomIndex - 1] && (bottomIndex) % columns !== 0) {
-            gridsArr[bottomIndex - 1].value++
-          }
-          // 右下
-          if (gridsArr[bottomIndex + 1] && (bottomIndex + 1) % columns !== 0) {
-            gridsArr[bottomIndex + 1].value++
-          }
-        }
-        // 左
-        let leftIndex = parseInt(index) - 1;
-        if (gridsArr[leftIndex] && (leftIndex) % columns !== 0) {
-          gridsArr[leftIndex].value++;
-        }
-        // 右
-        let rightIndex = parseInt(index) + 1;
-        if (gridsArr[rightIndex] && (rightIndex) % columns !== 0) {
-          gridsArr[rightIndex].value++;
-        }
+        aroundGridIndex.map(item => {
+          gridsArr[item].value++
+        })
       }
 
       this.setState({
@@ -188,6 +160,53 @@ class App extends React.Component{
       })
     }
     event && event.preventDefault();
+  }
+
+  /**
+   * @param {number} index
+   * @param {number} columns
+   * @param {number} rows
+   * @param {number} max
+   */
+  getAroundGridIndex(index, columns, rows, max){
+    index = parseInt(index)
+    columns = parseInt(columns)
+    rows = parseInt(rows)
+    max = parseInt(max)
+    const maxGrids = max || columns * rows;
+    let aroundGridIndex = [];
+
+    let top = index - columns;
+    let bottom = index + columns;
+    let left = index - 1;
+    let right = index + 1;
+
+    if (left >= 0 && index % columns > 0) {
+      aroundGridIndex.push(left)
+      if (top > 0) {
+        aroundGridIndex.push(top - 1)
+      }
+      if (bottom < maxGrids) {
+        aroundGridIndex.push(bottom - 1)
+      }
+    }
+    if (right > 0 && right % columns > 0) {
+      aroundGridIndex.push(right)
+      if (top >= 0) {
+        aroundGridIndex.push(top + 1)
+      }
+      if (bottom < maxGrids) {
+        aroundGridIndex.push(bottom + 1)
+      }
+    }
+    if (top >= 0) {
+      aroundGridIndex.push(top)
+    }
+    if (bottom < maxGrids) {
+      aroundGridIndex.push(bottom)
+    }
+
+    return aroundGridIndex;
   }
 
   handleSubmit(event){
@@ -219,8 +238,8 @@ class App extends React.Component{
         <div
           key={'item-' + i}
           className="item"
-          onClick={(e) => this.handleClick(e, i)}
           onMouseDown={(e) => this.handleClick(e, i)}
+          onClick={(e) => this.handleClick(e, i)}
         >
           {this.state.grids[i]}
         </div>
