@@ -28,7 +28,6 @@ class App extends React.Component{
   }
 
   handleClick(e, i){
-    console.log(this.getAroundGridIndex(i, this.state.gridsBoard.columns, this.state.gridsBoard.rows))
     JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i);
     let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
     let element; // 所操作单元格的元素JSX
@@ -71,6 +70,8 @@ class App extends React.Component{
       this.state.gridsArr[i].isOpen = true;
     }
 
+
+    // 点击到了炸弹
     if(currentItem.type === 'bomb' && e.button !== 2){
       this.state.gridsArr.map(item => {
         if(item.type === 'bomb'){
@@ -93,6 +94,15 @@ class App extends React.Component{
           {element}
         </div>
       );
+    }
+
+    // 点击了空白格
+    if(currentItem.value === 0 && currentItem.type === 'default'){
+      console.log('开始递归')
+      let aroundGridIndex = this.getAroundGridIndex(currentItem.key, this.state.gridsBoard.columns, this.state.gridsBoard.rows)
+      aroundGridIndex.forEach(item => {
+        console.log(this.state.gridsArr[item])
+      })
     }
 
     this.setState({
@@ -143,7 +153,7 @@ class App extends React.Component{
       // 埋 炸弹数量
       let gridsCount = [...Array(gridsArr.length).keys()];
       const columns = this.state.gridsBoard.columns;
-      const rows = this.state.gridsBoard.columns;
+      const rows = this.state.gridsBoard.rows;
       const maxGrids = columns * rows;
       gridsCount.splice(excludeIndex, 1)
       for(let i=0; i<this.state.bombs; i++){
@@ -174,12 +184,11 @@ class App extends React.Component{
     rows = parseInt(rows)
     max = parseInt(max)
     const maxGrids = max || columns * rows;
+    const top = index - columns;
+    const bottom = index + columns;
+    const left = index - 1;
+    const right = index + 1;
     let aroundGridIndex = [];
-
-    let top = index - columns;
-    let bottom = index + columns;
-    let left = index - 1;
-    let right = index + 1;
 
     if (left >= 0 && index % columns > 0) {
       aroundGridIndex.push(left)
