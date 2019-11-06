@@ -28,16 +28,13 @@ class App extends React.Component{
   }
 
   handleClick(e, i){
-    JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i);
+    JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i); // 如果不存在相关参考数组则创建一个新的
     let grids = this.state.grids.slice();           // 拷贝一个当前单元格
     let gridsArr = this.state.gridsArr.slice();     // 拷贝当前单元格数组信息
     let element;                                    // 所操作单元格的元素JSX
+
     const currentItem = this.state.gridsArr[i] || '';
     if (!currentItem) return
-
-    this.setState({
-      currentIndex: i
-    })
 
     if(e.button && e.button === 2){
       // 右键处理
@@ -57,13 +54,42 @@ class App extends React.Component{
       if(currentItem.flag){
         return;
       }
+
       switch (currentItem.type) {
         case 'bomb':
           element = <Landmine />;
-          // alert('GAME OVER!');
+          this.state.gridsArr.map(item => {
+            if(item.type === 'bomb'){
+              grids[item.key] = (
+                <div className="grid-item" style={item.flag ? { background: 'green' } : {}}>
+                  {element}
+                </div>
+              )
+            }
+          })
+          grids[i] = (
+            <div className="grid-item" style={{background: 'red'}}>
+              {element}
+            </div>
+          )
           break;
         case 'default':
           element = currentItem.value > 0 && currentItem.value;
+          grids[i] = (
+            <div className="grid-item">
+              {element}
+            </div>
+          );
+          if(currentItem.value === 0){
+            (this.findLinkBlankGrid(i)).forEach(index => {
+              grids[index] = (
+                <div className="grid-item">
+                  {element}
+                </div>
+              )
+              gridsArr[index].isOpen = true;
+            })
+          }
           break;
         default:
           break;
@@ -71,58 +97,31 @@ class App extends React.Component{
       gridsArr[i].isOpen = true;
     }
 
-
-    // 点击到了炸弹
-    if(currentItem.type === 'bomb' && e.button !== 2){
-      this.state.gridsArr.map(item => {
-        if(item.type === 'bomb'){
-          grids[item.key] = (
-            <div className="grid-item" style={item.flag ? { background: 'green' } : {}}>
-              {element}
-            </div>
-          )
-        }
-      })
-      grids[i] = (
-        <div className="grid-item" style={{background: 'red'}}>
-          {element}
-        </div>
-      )
-      // this.state.gridsArr = [0]
-    }else{
-      grids[i] = (
-        <div className="grid-item">
-          {element}
-        </div>
-      );
-    }
-
-    // 点击了空白格
-    if(currentItem.value === 0 && currentItem.type === 'default'){
-      // (this.findBlankGrid(i)).forEach(index => { })
-      console.log(this.findBlankGrid(i))
-    }
-
     this.setState({
       grids: grids,
-      gridsArr: gridsArr
+      gridsArr: gridsArr,
+      currentIndex: i
     })
   }
 
-  findBlankGrid(index){
-    const { gridsArr, gridsBoard } = this.state;
+  /**
+   * 查找当前所点击空白方块所连接到的空白方块下标
+   * @param {number} index
+   */
+  findLinkBlankGrid(index){
+    const { gridsArr} = this.state;
     let finals = [];
-    let aroundGridIndex = (index, columns, rows) => this.getAroundGridIndex(index, columns, rows)
+    let aroundGridIndex = (index) => this.getAroundGridIndex(index)
     const loop = arr => arr.forEach(i => {
       if(gridsArr[i].value === 0 && !gridsArr[i].isOpen){
         gridsArr[i].isOpen = true;
         finals.push(i)
-        loop(aroundGridIndex(i, gridsBoard.columns, gridsBoard.rows))
+        loop(aroundGridIndex(i))
       }
     })
-    loop(aroundGridIndex(index, gridsBoard.columns, gridsBoard.rows))
+    loop(aroundGridIndex(index))
     finals.forEach(index => {
-      aroundGridIndex(index, gridsBoard.columns, gridsBoard.rows)
+      aroundGridIndex(index)
     })
     return finals;
   }
@@ -196,10 +195,10 @@ class App extends React.Component{
    * @param {number} max
    */
   getAroundGridIndex(index, columns, rows, max){
-    index = parseInt(index)
-    columns = parseInt(columns)
-    rows = parseInt(rows)
-    max = parseInt(max)
+    index = parseInt(index);
+    columns = parseInt(columns) || this.state.gridsBoard.columns;
+    rows = parseInt(rows) || this.state.gridsBoard.rows;
+    max = parseInt(max);
     const maxGrids = max || columns * rows;
     const top = index - columns;
     const bottom = index + columns;
