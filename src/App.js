@@ -29,8 +29,9 @@ class App extends React.Component{
 
   handleClick(e, i){
     JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i);
-    let grids = this.state.grids.slice(); // 拷贝一个当前单元格数组
-    let element; // 所操作单元格的元素JSX
+    let grids = this.state.grids.slice();           // 拷贝一个当前单元格
+    let gridsArr = this.state.gridsArr.slice();     // 拷贝当前单元格数组信息
+    let element;                                    // 所操作单元格的元素JSX
     const currentItem = this.state.gridsArr[i] || '';
     if (!currentItem) return
 
@@ -49,7 +50,7 @@ class App extends React.Component{
           <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
         </div>
       );
-      this.state.gridsArr[i].flag = !currentItem.flag;
+      gridsArr[i].flag = !currentItem.flag;
     }else{
       // 左键处理
       console.log('左键处理')
@@ -67,7 +68,7 @@ class App extends React.Component{
         default:
           break;
       }
-      this.state.gridsArr[i].isOpen = true;
+      gridsArr[i].isOpen = true;
     }
 
 
@@ -98,16 +99,32 @@ class App extends React.Component{
 
     // 点击了空白格
     if(currentItem.value === 0 && currentItem.type === 'default'){
-      console.log('开始递归')
-      let aroundGridIndex = this.getAroundGridIndex(currentItem.key, this.state.gridsBoard.columns, this.state.gridsBoard.rows)
-      aroundGridIndex.forEach(item => {
-        console.log(this.state.gridsArr[item])
-      })
+      // (this.findBlankGrid(i)).forEach(index => { })
+      console.log(this.findBlankGrid(i))
     }
 
     this.setState({
-      grids: grids
+      grids: grids,
+      gridsArr: gridsArr
     })
+  }
+
+  findBlankGrid(index){
+    const { gridsArr, gridsBoard } = this.state;
+    let finals = [];
+    let aroundGridIndex = (index, columns, rows) => this.getAroundGridIndex(index, columns, rows)
+    const loop = arr => arr.forEach(i => {
+      if(gridsArr[i].value === 0 && !gridsArr[i].isOpen){
+        gridsArr[i].isOpen = true;
+        finals.push(i)
+        loop(aroundGridIndex(i, gridsBoard.columns, gridsBoard.rows))
+      }
+    })
+    loop(aroundGridIndex(index, gridsBoard.columns, gridsBoard.rows))
+    finals.forEach(index => {
+      aroundGridIndex(index, gridsBoard.columns, gridsBoard.rows)
+    })
+    return finals;
   }
 
   // 输入行
