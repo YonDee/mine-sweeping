@@ -88,6 +88,16 @@ class App extends React.Component{
                 </div>
               )
               gridsArr[index].isOpen = true;
+
+              (this.getAroundGridIndex(index)).forEach(idx => {
+                grids[idx] = (
+                  <div className="grid-item">
+                    {gridsArr[idx].value || ''}
+                  </div>
+                )
+                gridsArr[idx].isOpen = true;
+              })
+
             })
           }
           break;
@@ -196,8 +206,8 @@ class App extends React.Component{
    */
   getAroundGridIndex(index, columns, rows, max){
     index = parseInt(index);
-    columns = parseInt(columns) || this.state.gridsBoard.columns;
-    rows = parseInt(rows) || this.state.gridsBoard.rows;
+    columns = parseInt(columns || this.state.gridsBoard.columns);
+    rows = parseInt(rows || this.state.gridsBoard.rows);
     max = parseInt(max);
     const maxGrids = max || columns * rows;
     const top = index - columns;
