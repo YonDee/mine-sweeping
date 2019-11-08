@@ -1,30 +1,34 @@
 import React from 'react';
 import './css/App.css';
 import './fonts/iconfont.css'
-import Board from './board'             //棋盘
-import Information from './information' //信息组件
-import CustomBoard from './customBoard' //自定义棋盘表单组件
+import Board from './board'
+import Information from './information'
+import CustomBoard from './customBoard'
 
 class App extends React.Component{
   constructor(props){
     super(props);
     this.state = {
       currentIndex: 0,
-      grids: Array(100).fill(<div className="full-squares"></div>),
-      gridsArr: [],   // 实际参考的表格数据
-      columns: 10,    // 受控组件绑定的数据 行
-      rows: 10,       // 受控组件绑定的数据 列
+      grids: Array(100).fill(<div className="full-squares"></div>), // 可以被代替
+      gridsArr: [],   // Grids Data
+      columns: 10,
+      rows: 10,
       bombs: 20,
-      gridsBoard: {}, // 实际应用的表格数据
+      gridsBoard: {},
       maxErr: false
     }
   }
 
   handleClick(e, i){
-    JSON.stringify(this.state.gridsArr) === '[]' && this.createGridsArr(e, i); // 如果不存在相关参考数组则创建一个新的
-    let grids = this.state.grids.slice();           // 拷贝一个当前单元格
-    let gridsArr = this.state.gridsArr.slice();     // 拷贝当前单元格数组信息
-    let element;                                    // 所操作单元格的元素JSX
+    // Create 'gridsArr' or continue.
+    Array.isArray(this.state.gridsArr) &&
+    this.state.gridsArr.length === 0 &&
+    this.createGridsArr(e, i);
+
+    let grids = this.state.grids.slice();
+    let gridsArr = this.state.gridsArr.slice();
+    let element;
     const mineElement = (
       <div className="grid-item-box">
         <i className="iconfont iconbaozha"></i>
@@ -36,8 +40,7 @@ class App extends React.Component{
     if (!currentItem) return
 
     if(e.button && e.button === 2){
-      // 右键处理
-      console.log('右键处理')
+      // click right
       if (currentItem.isOpen) return
       element = currentItem.flag ? (
         <div className="full-squares"></div>
@@ -49,8 +52,7 @@ class App extends React.Component{
       gridsArr[i].flag = !currentItem.flag;
       grids[i] = element;
     }else{
-      // 左键处理
-      console.log('左键处理')
+      // click left
       if(currentItem.flag) return;
 
       switch (currentItem.type) {
@@ -113,7 +115,7 @@ class App extends React.Component{
   }
 
   /**
-   * 查找当前所点击空白方块所连接到的空白方块下标
+   * Find the current grid linked blank girds index.
    * @param {number} index
    */
   findLinkBlankGrid(index){
@@ -134,33 +136,33 @@ class App extends React.Component{
     return finals;
   }
 
-  // 输入行
+  // Input columns number.
   columnsChange(e){
     this.setState({
       columns: e.target.value
     })
   }
 
-  // 输入列
+  // Input rows number.
   rowsChange(e){
     this.setState({
       rows: e.target.value
     })
   }
 
-  // 输入炸弹数量
+  // Input mines nubmer.
   bombsChange(e){
     this.setState({
       bombs: e.target.value
     })
   }
 
-  // 提交自定义棋盘
+  // Submit custom board and create girds data.
   createGridsArr(event, excludeIndex){
-    // 设定 行 列
+    // setting rows and columns
     if(this.state.columns > 80 || this.state.rows > 80){
+      // exceeded the max number
       this.state.maxErr = true
-      console.log('超过限定行列。')
     }else{
       let gridsArr = Array.apply(
         null,
@@ -174,7 +176,7 @@ class App extends React.Component{
         }
       });
 
-      // 埋 炸弹数量
+      // Setting mines
       let gridsCount = [...Array(gridsArr.length).keys()];
       const columns = this.state.gridsBoard.columns;
       const rows = this.state.gridsBoard.rows;
@@ -292,7 +294,7 @@ class App extends React.Component{
               onSubmit={(e) => this.handleSubmit(e)}
             />
             <br />
-            <span className={'err-span'}>行/列最大支持80</span>
+            <span className={'err-span'}>Cols / Rows MAX 80</span>
           </div>
           <Board
             columns={this.state.gridsBoard.columns}

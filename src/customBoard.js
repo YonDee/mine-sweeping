@@ -10,16 +10,16 @@ class CustomBoard extends React.Component {
   render() {
     return (
       <form>
-        <label>行数：</label>
+        <label>Cols：</label>
         <input type="text" value={this.props.columns} onChange={this.props.columnsChange} />
         <br />
-        <label>列数：</label>
+        <label>Rows：</label>
         <input type="text" value={this.props.rows} onChange={this.props.rowsChange} />
         <br />
-        <label>雷数：</label>
+        <label>Mines：</label>
         <input type="text" value={this.props.bombs} onChange={this.props.bombsChange}/>
         <br />
-        <button onClick={this.props.onSubmit}>提交</button>
+        <button onClick={this.props.onSubmit}>Setting & Start!</button>
       </form>
     )
   }

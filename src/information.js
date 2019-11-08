@@ -8,7 +8,7 @@ class Information extends React.Component {
   render(){
     return (
       <div className="info-box">
-        <span>刚刚点击的组件下标：</span>{ this.props.index }
+        <span>Current Grid Index：</span>{ this.props.index }
       </div>
     )
   }
