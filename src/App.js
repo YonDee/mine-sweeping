@@ -1,33 +1,30 @@
 import React from 'react';
 import './css/App.css';
-import './fonts/iconfont.css'
+import './fonts/iconfont.css' // From https://www.iconfont.cn/
 import Board from './board'
 import Information from './information'
-import CustomBoard from './customBoard'
+import CustomizeBoardForm from './customizeBoardForm'
 
 class App extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {
-      currentIndex: 0,
-      grids: Array(100).fill(<div className="full-squares"></div>), // 可以被代替
-      gridsArr: [],   // Grids Data
-      columns: 10,
-      rows: 10,
-      bombs: 20,
-      gridsBoard: {},
-      maxErr: false
-    }
+  state = {
+    currentIndex: 0,
+    grids: Array(100).fill(<div className="full-squares"></div>), // 可以被代替
+    gridsData: [],   // Grids Data
+    columns: 10,
+    rows: 10,
+    mines: 20,
+    gridsBoard: {},
+    maxErr: false
   }
 
   handleClick(e, i){
-    // Create 'gridsArr' or continue.
-    Array.isArray(this.state.gridsArr) &&
-    this.state.gridsArr.length === 0 &&
-    this.createGridsArr(e, i);
+    // Create 'gridsData' or continue.
+    Array.isArray(this.state.gridsData) &&
+    this.state.gridsData.length === 0 &&
+    this.creategridsData(e, i);
 
     let grids = this.state.grids.slice();
-    let gridsArr = this.state.gridsArr.slice();
+    let gridsData = this.state.gridsData.slice();
     let element;
     const mineElement = (
       <div className="grid-item-box">
@@ -36,7 +33,7 @@ class App extends React.Component{
       </div>
     );
 
-    const currentItem = this.state.gridsArr[i] || '';
+    const currentItem = this.state.gridsData[i] || '';
     if (!currentItem) return
 
     if(e.button && e.button === 2){
@@ -49,26 +46,26 @@ class App extends React.Component{
           <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
         </div>
       );
-      gridsArr[i].flag = !currentItem.flag;
+      gridsData[i].flag = !currentItem.flag;
       grids[i] = element;
     }else{
       // click left
       if(currentItem.flag) return;
 
       switch (currentItem.type) {
-        case 'bomb':
+        case 'mine':
           element = mineElement;
-          this.state.gridsArr.map(item => {
-            if(item.type === 'bomb'){
+          this.state.gridsData.map(item => {
+            if(item.type === 'mine'){
               grids[item.key] = (
-                <div className="grid-item" style={item.flag ? { background: 'green' } : {}}>
+                <div className="grid-item-box" style={item.flag ? { background: 'green' } : {}}>
                   {element}
                 </div>
               )
             }
           })
           grids[i] = (
-            <div className="grid-item" style={{background: 'red'}}>
+            <div className="grid-item-box" style={{background: 'red'}}>
               {element}
             </div>
           )
@@ -76,40 +73,39 @@ class App extends React.Component{
         case 'default':
           element = currentItem.value > 0 && currentItem.value;
           grids[i] = (
-            <div className="grid-item">
+            <div className="grid-item-box">
               {element}
             </div>
           );
           if(currentItem.value === 0){
             (this.findLinkBlankGrid(i)).forEach(index => {
               grids[index] = (
-                <div className="grid-item">
+                <div className="grid-item-box">
                   {element}
                 </div>
               )
-              gridsArr[index].isOpen = true;
+              gridsData[index].isOpen = true;
 
               (this.getAroundGridIndex(index)).forEach(idx => {
                 grids[idx] = (
-                  <div className="grid-item">
-                    {gridsArr[idx].value || ''}
+                  <div className="grid-item-box">
+                    {gridsData[idx].value || ''}
                   </div>
                 )
-                gridsArr[idx].isOpen = true;
+                gridsData[idx].isOpen = true;
               })
-
-            })
+            });
           }
           break;
         default:
           break;
       }
-      gridsArr[i].isOpen = true;
+      gridsData[i].isOpen = true;
     }
 
     this.setState({
       grids: grids,
-      gridsArr: gridsArr,
+      gridsData: gridsData,
       currentIndex: i
     })
   }
@@ -119,12 +115,12 @@ class App extends React.Component{
    * @param {number} index
    */
   findLinkBlankGrid(index){
-    const { gridsArr} = this.state;
+    const { gridsData} = this.state;
     let finals = [];
     let aroundGridIndex = (index) => this.getAroundGridIndex(index)
     const loop = arr => arr.forEach(i => {
-      if(gridsArr[i].value === 0 && !gridsArr[i].isOpen){
-        gridsArr[i].isOpen = true;
+      if(gridsData[i].value === 0 && !gridsData[i].isOpen){
+        gridsData[i].isOpen = true;
         finals.push(i)
         loop(aroundGridIndex(i))
       }
@@ -151,20 +147,20 @@ class App extends React.Component{
   }
 
   // Input mines nubmer.
-  bombsChange(e){
+  minesChange(e){
     this.setState({
-      bombs: e.target.value
+      mines: e.target.value
     })
   }
 
   // Submit custom board and create girds data.
-  createGridsArr(event, excludeIndex){
+  creategridsData(event, excludeIndex){
     // setting rows and columns
     if(this.state.columns > 80 || this.state.rows > 80){
       // exceeded the max number
       this.state.maxErr = true
     }else{
-      let gridsArr = Array.apply(
+      let gridsData = Array.apply(
         null,
         Array(this.state.gridsBoard.columns * this.state.gridsBoard.rows)).map((item, index) => {
         return {
@@ -177,22 +173,22 @@ class App extends React.Component{
       });
 
       // Setting mines
-      let gridsCount = [...Array(gridsArr.length).keys()];
+      let gridsCount = [...Array(gridsData.length).keys()];
       const columns = this.state.gridsBoard.columns;
       const rows = this.state.gridsBoard.rows;
       const maxGrids = columns * rows;
       gridsCount.splice(excludeIndex, 1)
-      for(let i=0; i<this.state.bombs; i++){
+      for(let i=0; i<this.state.mines; i++){
         let index = gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1);
         let aroundGridIndex = this.getAroundGridIndex(index, columns, rows, maxGrids);
-        gridsArr[index].type = 'bomb';
+        gridsData[index].type = 'mine';
         aroundGridIndex.map(item => {
-          gridsArr[item].value++
+          gridsData[item].value++
         })
       }
 
       this.setState({
-        gridsArr: gridsArr
+        gridsData: gridsData
       })
     }
     event && event.preventDefault();
@@ -249,10 +245,10 @@ class App extends React.Component{
       gridsBoard: {
         columns: this.state.columns,
         rows: this.state.rows,
-        bombs: this.state.bombs
+        mines: this.state.mines
       },
       grids: Array(this.state.columns * this.state.rows).fill(<div className="full-squares"></div>),
-      gridsArr: []
+      gridsData: []
     })
     event && event.preventDefault();
   }
@@ -284,13 +280,13 @@ class App extends React.Component{
       <div className="App">
         <div className="app-body">
           <div className="app-body-form">
-            <CustomBoard
+            <CustomizeBoardForm
               columns={this.state.columns}
               rows={this.state.rows}
-              bombs={this.state.bombs}
+              mines={this.state.mines}
               columnsChange={(e) => this.columnsChange(e)}
               rowsChange={(e) => this.rowsChange(e)}
-              bombsChange={(e) => this.bombsChange(e)}
+              minesChange={(e) => this.minesChange(e)}
               onSubmit={(e) => this.handleSubmit(e)}
             />
             <br />
