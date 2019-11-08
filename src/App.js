@@ -2,7 +2,6 @@ import React from 'react';
 import './css/App.css';
 import './fonts/iconfont.css'
 import Board from './board'             //棋盘
-import Landmine from './landmine'       //炸弹
 import Information from './information' //信息组件
 import CustomBoard from './customBoard' //自定义棋盘表单组件
 
@@ -19,12 +18,6 @@ class App extends React.Component{
       gridsBoard: {}, // 实际应用的表格数据
       maxErr: false
     }
-    this.handleClick = this.handleClick.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.columnsChange = this.columnsChange.bind(this)
-    this.rowsChange = this.rowsChange.bind(this)
-    this.createGridsArr = this.createGridsArr.bind(this)
-    this.getAroundGridIndex = this.getAroundGridIndex.bind(this)
   }
 
   handleClick(e, i){
@@ -32,6 +25,12 @@ class App extends React.Component{
     let grids = this.state.grids.slice();           // 拷贝一个当前单元格
     let gridsArr = this.state.gridsArr.slice();     // 拷贝当前单元格数组信息
     let element;                                    // 所操作单元格的元素JSX
+    const mineElement = (
+      <div className="grid-item-box">
+        <i className="iconfont iconbaozha"></i>
+        <i className="iconfont iconzhadan"></i>
+      </div>
+    );
 
     const currentItem = this.state.gridsArr[i] || '';
     if (!currentItem) return
@@ -43,21 +42,20 @@ class App extends React.Component{
       element = currentItem.flag ? (
         <div className="full-squares"></div>
       ) : (
-        <div className="gird-item-box full-squares">
+        <div className="grid-item-box full-squares">
           <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
         </div>
       );
       gridsArr[i].flag = !currentItem.flag;
+      grids[i] = element;
     }else{
       // 左键处理
       console.log('左键处理')
-      if(currentItem.flag){
-        return;
-      }
+      if(currentItem.flag) return;
 
       switch (currentItem.type) {
         case 'bomb':
-          element = <Landmine />;
+          element = mineElement;
           this.state.gridsArr.map(item => {
             if(item.type === 'bomb'){
               grids[item.key] = (
