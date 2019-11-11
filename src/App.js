@@ -1,14 +1,15 @@
 import React from 'react';
-import './css/App.css';
 import './fonts/iconfont.css' // From https://www.iconfont.cn/
+import './css/App.css';
 import Board from './board'
+import Grids from './grids'
 import Information from './information'
 import CustomizeBoardForm from './customizeBoardForm'
 
 class App extends React.Component{
   state = {
     currentIndex: 0,
-    grids: Array(100).fill(<div className="full-squares"></div>), // 可以被代替
+    gridsElement: [], // Grids Element
     gridsData: [],   // Grids Data
     columns: 10,
     rows: 10,
@@ -21,11 +22,9 @@ class App extends React.Component{
     // Create 'gridsData' or continue.
     Array.isArray(this.state.gridsData) &&
     this.state.gridsData.length === 0 &&
-    this.creategridsData(e, i);
+    this.createGridsData(e, i);
 
-    let grids = this.state.grids.slice();
     let gridsData = this.state.gridsData.slice();
-    let element;
     const mineElement = (
       <div className="grid-item-box">
         <i className="iconfont iconbaozha"></i>
@@ -39,59 +38,25 @@ class App extends React.Component{
     if(e.button && e.button === 2){
       // click right
       if (currentItem.isOpen) return
-      element = currentItem.flag ? (
-        <div className="full-squares"></div>
-      ) : (
-        <div className="grid-item-box full-squares">
-          <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>
-        </div>
-      );
       gridsData[i].flag = !currentItem.flag;
-      grids[i] = element;
     }else{
       // click left
       if(currentItem.flag) return;
 
       switch (currentItem.type) {
         case 'mine':
-          element = mineElement;
           this.state.gridsData.map(item => {
             if(item.type === 'mine'){
-              grids[item.key] = (
-                <div className="grid-item-box" style={item.flag ? { background: 'green' } : {}}>
-                  {element}
-                </div>
-              )
+              item.isOpen = true;
             }
           })
-          grids[i] = (
-            <div className="grid-item-box" style={{background: 'red'}}>
-              {element}
-            </div>
-          )
           break;
         case 'default':
-          element = currentItem.value > 0 && currentItem.value;
-          grids[i] = (
-            <div className="grid-item-box">
-              {element}
-            </div>
-          );
           if(currentItem.value === 0){
             (this.findLinkBlankGrid(i)).forEach(index => {
-              grids[index] = (
-                <div className="grid-item-box">
-                  {element}
-                </div>
-              )
               gridsData[index].isOpen = true;
 
               (this.getAroundGridIndex(index)).forEach(idx => {
-                grids[idx] = (
-                  <div className="grid-item-box">
-                    {gridsData[idx].value || ''}
-                  </div>
-                )
                 gridsData[idx].isOpen = true;
               })
             });
@@ -104,7 +69,6 @@ class App extends React.Component{
     }
 
     this.setState({
-      grids: grids,
       gridsData: gridsData,
       currentIndex: i
     })
@@ -154,7 +118,7 @@ class App extends React.Component{
   }
 
   // Submit custom board and create girds data.
-  creategridsData(event, excludeIndex){
+  createGridsData(event, excludeIndex){
     // setting rows and columns
     if(this.state.columns > 80 || this.state.rows > 80){
       // exceeded the max number
@@ -241,13 +205,14 @@ class App extends React.Component{
   }
 
   handleSubmit(event){
+    let gridsMax = this.state.columns * this.state.rows;
     this.setState({
       gridsBoard: {
         columns: this.state.columns,
         rows: this.state.rows,
         mines: this.state.mines
       },
-      grids: Array(this.state.columns * this.state.rows).fill(<div className="full-squares"></div>),
+      grids: Array(gridsMax).fill(<div className="full-squares"></div>),
       gridsData: []
     })
     event && event.preventDefault();
@@ -255,6 +220,7 @@ class App extends React.Component{
 
   componentDidMount(){
     this.handleSubmit();
+    // Cancel mouse default event.
     const element = document.getElementById('board');
     element.oncontextmenu = function(e) {
       e.preventDefault();
@@ -262,21 +228,10 @@ class App extends React.Component{
   }
 
   render(){
-    let items = []
-    for (var index = 0; index < this.state.gridsBoard.columns * this.state.gridsBoard.rows; index++) {
-      const i = index;
-      items.push(
-        <div
-          key={'item-' + i}
-          className="item"
-          onMouseDown={(e) => this.handleClick(e, i)}
-          onClick={(e) => this.handleClick(e, i)}
-        >
-          {this.state.grids[i]}
-        </div>
-      )
-    }
+    const gridsData = this.state.gridsData;
+    const gridsMax = this.state.columns * this.state.rows;
     return (
+      // render element
       <div className="App">
         <div className="app-body">
           <div className="app-body-form">
@@ -296,7 +251,22 @@ class App extends React.Component{
             columns={this.state.gridsBoard.columns}
             rows={this.state.gridsBoard.rows}
           >
-            {items}
+            {[...Array(!isNaN(gridsMax) && gridsMax).keys()].map(index =>
+              <div
+                key={'item-' + index}
+                className="item"
+                onMouseDown={(e) => this.handleClick(e, index)}
+                onClick={(e) => this.handleClick(e, index)}
+              >
+                <div className="full-squares">
+                  <Grids
+                    gridsData = {gridsData}
+                    index = {index}
+                    key = {index}
+                  />
+                </div>
+              </div>
+            )}
           </Board>
           <Information index={this.state.currentIndex} />
         </div>

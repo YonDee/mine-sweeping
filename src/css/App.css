@@ -104,11 +104,12 @@ select {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #ffffff;
 }
 
 .iconbaozha {
   color: red;
-  font-size: 40px;
+  font-size: 30px;
   position: absolute;
   z-index: 1
 }
@@ -116,7 +117,7 @@ select {
 .iconzhadan {
   position: absolute;
   z-index: 2;
-  font-size: 25px
+  font-size: 20px
 }
 
 /* style of 'customizeBoardForm' component */
