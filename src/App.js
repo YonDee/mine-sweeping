@@ -5,6 +5,7 @@ import Board from './board'
 import Grids from './grids'
 import Information from './information'
 import CustomizeBoardForm from './customizeBoardForm'
+import Calculation from './libs/Calculation'
 
 class App extends React.Component{
   state = {
@@ -15,7 +16,8 @@ class App extends React.Component{
     rows: 10,
     mines: 20,
     gridsBoard: {},
-    maxErr: false
+    maxErr: false,
+    calculation: new Calculation()
   }
 
   handleClick(e, i){
@@ -24,6 +26,9 @@ class App extends React.Component{
     this.state.gridsData.length === 0 &&
     this.createGridsData(e, i);
     let gridsData = this.state.gridsData.slice();
+    const columns = this.state.gridsBoard.columns;
+    const rows = this.state.gridsBoard.rows;
+    const gridsMax = columns * rows;
 
     const currentItem = this.state.gridsData[i] || '';
     if (!currentItem) return
@@ -48,14 +53,23 @@ class App extends React.Component{
           if(currentItem.value === 0){
             const findLinkBlankGrid = this.findLinkBlankGrid(i);
             if(Array.isArray(findLinkBlankGrid) && findLinkBlankGrid.length === 0){
-              (this.getAroundGridIndex(i)).forEach(idx => {
+              (this.state.calculation.getAroundGridIndex(
+                i,
+                columns,
+                rows,
+                gridsMax
+              )).forEach(idx => {
                 gridsData[idx].isOpen = true;
               })
             }else{
               findLinkBlankGrid.forEach(index => {
                 gridsData[index].isOpen = true;
-
-                (this.getAroundGridIndex(index)).forEach(idx => {
+                (this.state.calculation.getAroundGridIndex(
+                  index,
+                  columns,
+                  rows,
+                  gridsMax
+                )).forEach(idx => {
                   gridsData[idx].isOpen = true;
                 })
               });
@@ -80,8 +94,16 @@ class App extends React.Component{
    */
   findLinkBlankGrid(index){
     const { gridsData} = this.state;
+    const columns = this.state.gridsBoard.columns;
+    const rows = this.state.gridsBoard.rows;
+    const gridsMax = columns * rows;
     let finals = [];
-    let aroundGridIndex = (index) => this.getAroundGridIndex(index)
+    let aroundGridIndex = (index) => this.state.calculation.getAroundGridIndex(
+      index,
+      columns,
+      rows,
+      gridsMax
+    );
     const loop = arr => arr.forEach(i => {
       if(gridsData[i].value === 0 && !gridsData[i].isOpen){
         gridsData[i].isOpen = true;
@@ -148,7 +170,7 @@ class App extends React.Component{
       gridsCount.splice(excludeIndex, 1)
       for(let i=0; i<this.state.mines; i++){
         let index = gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1);
-        let aroundGridIndex = this.getAroundGridIndex(index, columns, rows, maxGrids);
+        let aroundGridIndex = this.state.calculation.getAroundGridIndex(index, columns, rows, maxGrids);
         gridsData[index].type = 'mine';
         aroundGridIndex.map(item => {
           gridsData[item].value++
@@ -160,52 +182,6 @@ class App extends React.Component{
       })
     }
     event && event.preventDefault();
-  }
-
-  /**
-   * @param {number} index
-   * @param {number} columns
-   * @param {number} rows
-   * @param {number} max
-   */
-  getAroundGridIndex(index, columns, rows, max){
-    index = parseInt(index);
-    columns = parseInt(columns || this.state.gridsBoard.columns);
-    rows = parseInt(rows || this.state.gridsBoard.rows);
-    max = parseInt(max);
-    const maxGrids = max || columns * rows;
-    const top = index - columns;
-    const bottom = index + columns;
-    const left = index - 1;
-    const right = index + 1;
-    let aroundGridIndex = [];
-
-    if (left >= 0 && index % columns > 0) {
-      aroundGridIndex.push(left)
-      if (top > 0) {
-        aroundGridIndex.push(top - 1)
-      }
-      if (bottom < maxGrids) {
-        aroundGridIndex.push(bottom - 1)
-      }
-    }
-    if (right > 0 && right % columns > 0) {
-      aroundGridIndex.push(right)
-      if (top >= 0) {
-        aroundGridIndex.push(top + 1)
-      }
-      if (bottom < maxGrids) {
-        aroundGridIndex.push(bottom + 1)
-      }
-    }
-    if (top >= 0) {
-      aroundGridIndex.push(top)
-    }
-    if (bottom < maxGrids) {
-      aroundGridIndex.push(bottom)
-    }
-
-    return aroundGridIndex;
   }
 
   handleSubmit(event){
