@@ -23,14 +23,7 @@ class App extends React.Component{
     Array.isArray(this.state.gridsData) &&
     this.state.gridsData.length === 0 &&
     this.createGridsData(e, i);
-
     let gridsData = this.state.gridsData.slice();
-    const mineElement = (
-      <div className="grid-item-box">
-        <i className="iconfont iconbaozha"></i>
-        <i className="iconfont iconzhadan"></i>
-      </div>
-    );
 
     const currentItem = this.state.gridsData[i] || '';
     if (!currentItem) return
@@ -53,13 +46,20 @@ class App extends React.Component{
           break;
         case 'default':
           if(currentItem.value === 0){
-            (this.findLinkBlankGrid(i)).forEach(index => {
-              gridsData[index].isOpen = true;
-
-              (this.getAroundGridIndex(index)).forEach(idx => {
+            const findLinkBlankGrid = this.findLinkBlankGrid(i);
+            if(Array.isArray(findLinkBlankGrid) && findLinkBlankGrid.length === 0){
+              (this.getAroundGridIndex(i)).forEach(idx => {
                 gridsData[idx].isOpen = true;
               })
-            });
+            }else{
+              findLinkBlankGrid.forEach(index => {
+                gridsData[index].isOpen = true;
+
+                (this.getAroundGridIndex(index)).forEach(idx => {
+                  gridsData[idx].isOpen = true;
+                })
+              });
+            }
           }
           break;
         default:
@@ -117,7 +117,11 @@ class App extends React.Component{
     })
   }
 
-  // Submit custom board and create girds data.
+  /**
+   * Submit custom board and create girds data.
+   * @param {object} event
+   * @param {number} excludeIndex
+   */
   createGridsData(event, excludeIndex){
     // setting rows and columns
     if(this.state.columns > 80 || this.state.rows > 80){
@@ -229,7 +233,7 @@ class App extends React.Component{
 
   render(){
     const gridsData = this.state.gridsData;
-    const gridsMax = this.state.columns * this.state.rows;
+    const gridsMax = this.state.gridsBoard.columns * this.state.gridsBoard.rows;
     return (
       // render element
       <div className="App">

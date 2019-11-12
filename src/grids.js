@@ -10,33 +10,29 @@ class grids extends React.Component {
     const flagElement = <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>;
 
     if (Array.isArray(gridsData) && gridsData.length > 0){
+      if(grid.flag && grid.isOpen === false){
+        element = flagElement;
+      }else{
         switch (grid.type) {
           case 'mine':
-            if(grid.flag && grid.isOpen === false){
-              element = flagElement;
-            }else{
-              element = grid.isOpen && (
-                <div className="grid-item-box" style={grid.flag ? { background: 'green' } : { background: 'red' }}>
-                  <i className="iconfont iconzhadan"></i>
-                </div>
-              );
-            }
+            element = grid.isOpen && (
+              <div className="grid-item-box" style={grid.flag ? { background: 'green' } : { background: 'red' }}>
+                <i className="iconfont iconzhadan"></i>
+              </div>
+            );
             break;
           case 'default':
-            if(grid.flag && grid.isOpen === false){
-              element = flagElement;
-            }else{
-              element = grid.isOpen && (
-                <div className="grid-item-box">
-                  {grid.value || ''}
-                </div>
-              )
-            }
+            element = grid.isOpen && (
+              <div className="grid-item-box">
+                {grid.value || ''}
+              </div>
+            )
             break;
           default:
             break;
         }
       }
+    }
 
     element = element ? element : <div></div>;
     return element;
