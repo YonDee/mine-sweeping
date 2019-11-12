@@ -107,17 +107,16 @@ select {
   background: #ffffff;
 }
 
-.iconbaozha {
-  color: red;
-  font-size: 30px;
-  position: absolute;
-  z-index: 1
+.iconzhadan {
+  font-size: 20px
 }
 
-.iconzhadan {
-  position: absolute;
-  z-index: 2;
-  font-size: 20px
+.iconhighest{
+  color: red;
+  text-shadow: 0 10px 7px #000;
+  font-size: 15px;
+  display: block;
+  margin-top: 3px;
 }
 
 /* style of 'customizeBoardForm' component */

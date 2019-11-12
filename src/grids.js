@@ -7,7 +7,7 @@ class grids extends React.Component {
     const index = this.props.index;
     const gridsData = this.props.gridsData;
     const grid = this.props.gridsData[index];
-    const flagElement = <i className="iconfont iconhighest" style={{ color: 'red', textShadow: '0 10px 7px #000' }}></i>;
+    const flagElement = <i className="iconfont iconhighest"></i>;
 
     if (Array.isArray(gridsData) && gridsData.length > 0){
       if(grid.flag && grid.isOpen === false){
