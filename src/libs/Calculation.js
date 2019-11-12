@@ -1,7 +1,4 @@
 class Calculation {
-  test(){
-    console.log('hello')
-  }
   /**
    * Calculates the element index around the current element
    * @param {number} index

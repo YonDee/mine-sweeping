@@ -138,6 +138,22 @@ class App extends React.Component{
       mines: e.target.value
     })
   }
+  
+  /**
+   * compute the gird around girds and set a state
+   * @param {*} event 
+   * @param {*} excludeIndex 
+   */
+  computeGrid(index){
+    const grid = this.state.gridsData[index];
+    if(grid.isOpen && grid.value > 0){
+      console.log(this.state.calculation.getAroundGridIndex(
+        index,
+        this.state.gridsBoard.columns,
+        this.state.gridsBoard.rows
+      ))
+    }
+  }
 
   /**
    * Submit custom board and create girds data.
@@ -210,6 +226,7 @@ class App extends React.Component{
   render(){
     const gridsData = this.state.gridsData;
     const gridsMax = this.state.gridsBoard.columns * this.state.gridsBoard.rows;
+    const gridsBoard = this.state.gridsBoard;
     return (
       // render element
       <div className="App">
@@ -236,13 +253,14 @@ class App extends React.Component{
                 key={'item-' + index}
                 className="item"
                 onMouseDown={(e) => this.handleClick(e, index)}
-                onClick={(e) => this.handleClick(e, index)}
               >
                 <div className="full-squares">
                   <Grids
-                    gridsData = {gridsData}
-                    index = {index}
-                    key = {index}
+                    gridsData={gridsData}
+                    gridsBoard={gridsBoard}
+                    computeGrid={() => this.computeGrid(index)}
+                    index={index}
+                    key={index}
                   />
                 </div>
               </div>

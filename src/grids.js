@@ -1,14 +1,6 @@
 import React from 'react';
 import './fonts/iconfont.css' // From https://www.iconfont.cn/
-
 class grids extends React.Component {
-  handleClick() {
-    const index = this.props.index;
-    const grid = this.props.gridsData[index];
-    if(grid.isOpen && grid.value > 0){
-      console.log('handle')
-    }
-  }
   render() {
     let element;
     const index = this.props.index;
@@ -30,7 +22,7 @@ class grids extends React.Component {
             );
             break;
           case 'default':
-            // color switch
+            // color switcher
             switch (grid.value) {
               case 1:
                 color = 'blue';
@@ -56,7 +48,7 @@ class grids extends React.Component {
               <div
                 className="grid-item-box"
                 style={{color: color}}
-                onClick={() => this.handleClick()}
+                onMouseDown={this.props.computeGrid}
               >
                 {grid.value || ''}
               </div>
