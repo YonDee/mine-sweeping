@@ -20,17 +20,20 @@ class App extends React.Component{
     calculation: new Calculation()
   }
 
-  handleClick(e, i){
+  handleClick(e, i, gridsData){
     // Create 'gridsData' or continue.
-    Array.isArray(this.state.gridsData) &&
-    this.state.gridsData.length === 0 &&
-    this.createGridsData(e, i);
-    let gridsData = this.state.gridsData.slice();
-    const columns = this.state.gridsBoard.columns;
-    const rows = this.state.gridsBoard.rows;
+    gridsData = this.state.gridsData;
+    const gridsBoard = this.state.gridsBoard;
+    if( Array.isArray(gridsData) &&
+      gridsData.length === 0 ){
+      gridsData = this.createGridsData(e, i);
+    }
+
+    const columns = gridsBoard.columns;
+    const rows = gridsBoard.rows;
     const gridsMax = columns * rows;
 
-    const currentItem = this.state.gridsData[i] || '';
+    const currentItem = gridsData[i] || '';
     if (!currentItem) return
 
     if(e.button && e.button === 2){
@@ -51,7 +54,7 @@ class App extends React.Component{
           break;
         case 'default':
           if(currentItem.value === 0){
-            const findLinkBlankGrid = this.findLinkBlankGrid(i);
+            const findLinkBlankGrid = this.findLinkBlankGrid(i, gridsData);
             if(Array.isArray(findLinkBlankGrid) && findLinkBlankGrid.length === 0){
               (this.state.calculation.getAroundGridIndex(
                 i,
@@ -92,8 +95,8 @@ class App extends React.Component{
    * Find the current grid linked blank girds index.
    * @param {number} index
    */
-  findLinkBlankGrid(index){
-    const { gridsData} = this.state;
+  findLinkBlankGrid(index, gridsData){
+    if(!gridsData) gridsData = this.state.gridsData;
     const columns = this.state.gridsBoard.columns;
     const rows = this.state.gridsBoard.rows;
     const gridsMax = columns * rows;
@@ -141,17 +144,17 @@ class App extends React.Component{
   
   /**
    * compute the gird around girds and set a state
-   * @param {*} event 
-   * @param {*} excludeIndex 
+   * @param {*} event
+   * @param {*} excludeIndex
    */
   computeGrid(index){
     const grid = this.state.gridsData[index];
     if(grid.isOpen && grid.value > 0){
-      console.log(this.state.calculation.getAroundGridIndex(
+      this.state.calculation.getAroundGridIndex(
         index,
         this.state.gridsBoard.columns,
         this.state.gridsBoard.rows
-      ))
+      )
     }
   }
 
@@ -161,12 +164,13 @@ class App extends React.Component{
    * @param {number} excludeIndex
    */
   createGridsData(event, excludeIndex){
+    let gridsData;
     // setting rows and columns
     if(this.state.columns > 80 || this.state.rows > 80){
       // exceeded the max number
       this.state.maxErr = true
     }else{
-      let gridsData = Array.apply(
+      gridsData = Array.apply(
         null,
         Array(this.state.gridsBoard.columns * this.state.gridsBoard.rows)).map((item, index) => {
         return {
@@ -193,11 +197,12 @@ class App extends React.Component{
         })
       }
 
-      this.setState({
-        gridsData: gridsData
-      })
     }
+    this.setState({
+      gridsData: gridsData
+    })
     event && event.preventDefault();
+    return gridsData;
   }
 
   handleSubmit(event){
