@@ -60,6 +60,7 @@ select {
   width: 100%;
   height: 100%;
   background: #b1b1b1;
+  cursor: pointer;
 }
 
 .item:hover {
@@ -105,6 +106,13 @@ select {
   justify-content: center;
   align-items: center;
   background: #ffffff;
+  cursor: auto;
+}
+
+.number-hover:hover {
+  transition: .3s all;
+  background: #f1f1f1;
+  cursor: pointer;
 }
 
 .iconzhadan {

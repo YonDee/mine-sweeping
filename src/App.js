@@ -20,9 +20,9 @@ class App extends React.Component{
     calculation: new Calculation()
   }
 
-  handleClick(e, i, gridsData){
+  handleClick(e, i){
     // Create 'gridsData' or continue.
-    gridsData = this.state.gridsData;
+    let gridsData = this.state.gridsData;
     const gridsBoard = this.state.gridsBoard;
     if( Array.isArray(gridsData) &&
       gridsData.length === 0 ){
@@ -141,20 +141,42 @@ class App extends React.Component{
       mines: e.target.value
     })
   }
-  
+
   /**
    * compute the gird around girds and set a state
    * @param {*} event
    * @param {*} excludeIndex
    */
   computeGrid(index){
-    const grid = this.state.gridsData[index];
+    const gridsData = this.state.gridsData;
+    const grid = gridsData[index];
+    let noSafes = [];
     if(grid.isOpen && grid.value > 0){
-      this.state.calculation.getAroundGridIndex(
+      const aroundGridIndex = this.state.calculation.getAroundGridIndex(
         index,
         this.state.gridsBoard.columns,
         this.state.gridsBoard.rows
       )
+
+      noSafes = aroundGridIndex.filter(index => {
+        return gridsData[index].type === 'mine' && gridsData[index].flag === false;
+      })
+      console.log(noSafes)  // 这里是答案 :x
+
+      if(noSafes.length === 0){
+        aroundGridIndex.forEach(index => {
+          if(gridsData[index].flag === false){
+            gridsData[index].isOpen = true;
+          }
+          if(gridsData[index].value === 0){
+            this.handleClick({button: 1}, index, gridsData)
+          }
+        })
+      }
+
+      this.setState({
+        gridsData: gridsData
+      })
     }
   }
 

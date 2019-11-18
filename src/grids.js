@@ -44,9 +44,11 @@ class grids extends React.Component {
                 break;
             }
             // create this gird element
+            let elementClass = "grid-item-box";
+            elementClass += grid.value ? ' number-hover' : '';
             element = grid.isOpen && (
               <div
-                className="grid-item-box"
+                className={elementClass}
                 style={{color: color}}
                 onMouseDown={this.props.computeGrid}
               >
