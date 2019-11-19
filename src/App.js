@@ -6,6 +6,7 @@ import Grids from './grids'
 import Information from './information'
 import CustomizeBoardForm from './customizeBoardForm'
 import Calculation from './libs/Calculation'
+import GameOver from './gameOver'
 
 class App extends React.Component{
   state = {
@@ -17,7 +18,8 @@ class App extends React.Component{
     mines: 20,
     gridsBoard: {},
     maxErr: false,
-    calculation: new Calculation()
+    calculation: new Calculation(),
+    gameOver: false
   }
 
   handleClick(e, i){
@@ -50,6 +52,9 @@ class App extends React.Component{
             if(item.type === 'mine'){
               item.isOpen = true;
             }
+          })
+          this.setState({
+            gameOver: true
           })
           break;
         case 'default':
@@ -140,6 +145,16 @@ class App extends React.Component{
     this.setState({
       mines: e.target.value
     })
+  }
+
+  /**
+   * aroundSink mousedown event
+   * @param {number} index
+   */
+  aroundSink(index) {
+    const columns = this.state.gridsBoard.columns;
+    const rows = this.state.gridsBoard.rows;
+    const aroundGridIndex = this.state.calculation.getAroundGridIndex( index, columns, rows)
   }
 
   /**
@@ -236,7 +251,8 @@ class App extends React.Component{
         mines: this.state.mines
       },
       grids: Array(gridsMax).fill(<div className="full-squares"></div>),
-      gridsData: []
+      gridsData: [],
+      gameOver: false
     })
     event && event.preventDefault();
   }
@@ -275,6 +291,10 @@ class App extends React.Component{
             columns={this.state.gridsBoard.columns}
             rows={this.state.gridsBoard.rows}
           >
+            <GameOver
+              gameover={this.state.gameOver}
+              gameAgain={() => this.handleSubmit()}
+            />
             {[...Array(!isNaN(gridsMax) && gridsMax).keys()].map(index =>
               <div
                 key={'item-' + index}
@@ -286,6 +306,7 @@ class App extends React.Component{
                     gridsData={gridsData}
                     gridsBoard={gridsBoard}
                     computeGrid={() => this.computeGrid(index)}
+                    aroundSink={() => this.aroundSink(index)}
                     index={index}
                     key={index}
                   />

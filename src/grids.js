@@ -50,7 +50,8 @@ class grids extends React.Component {
               <div
                 className={elementClass}
                 style={{color: color}}
-                onMouseDown={this.props.computeGrid}
+                onMouseUp={this.props.computeGrid}
+                onMouseDown={this.props.aroundSink}
               >
                 {grid.value || ''}
               </div>

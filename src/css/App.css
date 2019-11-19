@@ -138,7 +138,7 @@ select {
   margin-bottom: 10px;
 }
 
-#customize-board-form button{
+#customize-board-form button, .gameButton{
   padding: 10px;
   border-radius: 7px;
   box-shadow: 0 5px 0 #ccc;
@@ -146,8 +146,33 @@ select {
   cursor: pointer;
 }
 
-#customize-board-form button:hover {
+#customize-board-form button:hover, .gameButton:hover {
   box-shadow: 0 1px 0 #ccc;
   margin-top: 10px;
   background: #f2f2f2;
+}
+
+/* gameover component */
+.gameover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  background: rgba(251, 255, 27, 0.5);
+  flex-direction: column;
+}
+
+.gameover .title {
+  font-size: 30px;
+  color: red;
+  text-shadow: 0 0 1px #000;
+  opacity:0.8;
+}
+
+.gameover>div{
+  margin-bottom: 20px;
 }
