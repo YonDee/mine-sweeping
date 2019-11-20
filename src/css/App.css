@@ -109,6 +109,12 @@ select {
   cursor: auto;
 }
 
+.grid-sink {
+  background: #de6a6a;
+  width: 100%;
+  height: 100%;
+}
+
 .number-hover:hover {
   transition: .3s all;
   background: #f1f1f1;
@@ -152,8 +158,8 @@ select {
   background: #f2f2f2;
 }
 
-/* gameover component */
-.gameover {
+/* score-show component */
+.score-show {
   position: absolute;
   top: 0;
   left: 0;
@@ -166,13 +172,13 @@ select {
   flex-direction: column;
 }
 
-.gameover .title {
+.score-show .title {
   font-size: 30px;
   color: red;
   text-shadow: 0 0 1px #000;
   opacity:0.8;
 }
 
-.gameover>div{
+.score-show > div{
   margin-bottom: 20px;
 }

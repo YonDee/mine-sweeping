@@ -6,7 +6,7 @@ import Grids from './grids'
 import Information from './information'
 import CustomizeBoardForm from './customizeBoardForm'
 import Calculation from './libs/Calculation'
-import GameOver from './gameOver'
+import ScoreShow from './scoreShow'
 
 class App extends React.Component{
   state = {
@@ -19,7 +19,11 @@ class App extends React.Component{
     gridsBoard: {},
     maxErr: false,
     calculation: new Calculation(),
-    gameOver: false
+    scoreShow: false,
+    gameInformation: {
+      isWin: false,
+      time: ''
+    }
   }
 
   handleClick(e, i){
@@ -54,7 +58,7 @@ class App extends React.Component{
             }
           })
           this.setState({
-            gameOver: true
+            scoreShow: true
           })
           break;
         case 'default':
@@ -88,6 +92,32 @@ class App extends React.Component{
           break;
       }
       gridsData[i].isOpen = true;
+    }
+
+    // 统计flag的数量，如果满足当前数字数量直接翻开，如果标记错误直接游戏结束
+    const conditionOfVictory = {
+      dangers: [],
+      unprocessed: [],
+      mines: this.state.gridsBoard.mines,
+      flags: [],
+    }
+    gridsData.forEach(item => {
+      if (item.type === 'mine' && item.flag === false) {
+        conditionOfVictory.dangers.push(item)
+      }
+      if (item.isOpen === false && item.flag === false) {
+        conditionOfVictory.unprocessed.push(item)
+      }
+      if (item.flag) {
+        conditionOfVictory.flags.push(item)
+      }
+    })
+    if(
+      conditionOfVictory.dangers.length === 0 &&
+      conditionOfVictory.unprocessed.length === 0 &&
+      conditionOfVictory.flags.length == conditionOfVictory.mines
+    ){
+      alert('win!')
     }
 
     this.setState({
@@ -152,15 +182,21 @@ class App extends React.Component{
    * @param {number} index
    */
   aroundSink(index) {
+    const gridsData = this.state.gridsData;
     const columns = this.state.gridsBoard.columns;
     const rows = this.state.gridsBoard.rows;
     const aroundGridIndex = this.state.calculation.getAroundGridIndex( index, columns, rows)
+    aroundGridIndex.forEach(index => {
+      gridsData[index].isSink = true;
+    })
+    this.setState({
+      gridsData: gridsData
+    })
   }
 
   /**
    * compute the gird around girds and set a state
-   * @param {*} event
-   * @param {*} excludeIndex
+   * @param {number} index
    */
   computeGrid(index){
     const gridsData = this.state.gridsData;
@@ -178,16 +214,18 @@ class App extends React.Component{
       })
       console.log(noSafes)  // 这里是答案 :x
 
-      if(noSafes.length === 0){
-        aroundGridIndex.forEach(index => {
-          if(gridsData[index].flag === false){
-            gridsData[index].isOpen = true;
+      aroundGridIndex.forEach(i => {
+        gridsData[i].isSink = false;
+        if(noSafes.length === 0){
+          if(gridsData[i].flag === false){
+            gridsData[i].isOpen = true;
           }
-          if(gridsData[index].value === 0){
-            this.handleClick({button: 1}, index, gridsData)
+          if(gridsData[i].value === 0){
+            this.handleClick({button: 1}, i, gridsData)
           }
-        })
-      }
+        }
+      })
+
 
       this.setState({
         gridsData: gridsData
@@ -215,6 +253,7 @@ class App extends React.Component{
           value: 0,
           flag: false,
           isOpen: false,
+          isSink: false,
           key: index
         }
       });
@@ -229,9 +268,7 @@ class App extends React.Component{
         let index = gridsCount.splice(Math.floor(Math.random() * gridsCount.length), 1);
         let aroundGridIndex = this.state.calculation.getAroundGridIndex(index, columns, rows, maxGrids);
         gridsData[index].type = 'mine';
-        aroundGridIndex.map(item => {
-          gridsData[item].value++
-        })
+        aroundGridIndex.forEach(item => gridsData[item].value++)
       }
 
     }
@@ -252,7 +289,7 @@ class App extends React.Component{
       },
       grids: Array(gridsMax).fill(<div className="full-squares"></div>),
       gridsData: [],
-      gameOver: false
+      scoreShow: false
     })
     event && event.preventDefault();
   }
@@ -291,8 +328,8 @@ class App extends React.Component{
             columns={this.state.gridsBoard.columns}
             rows={this.state.gridsBoard.rows}
           >
-            <GameOver
-              gameover={this.state.gameOver}
+            <ScoreShow
+              scoreShow={this.state.scoreShow}
               gameAgain={() => this.handleSubmit()}
             />
             {[...Array(!isNaN(gridsMax) && gridsMax).keys()].map(index =>

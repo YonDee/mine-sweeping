@@ -1,9 +1,9 @@
 import React from 'react'
 
-class ScoreShow extends React.Component {
+class GameOver extends React.Component {
   render(){
     const element = (
-      <div style={this.props.gameover ? {display: "flex"} : {display: "none"}} className="gameover">
+      <div style={this.props.scoreShow ? {display: "flex"} : {display: "none"}} className="score-show">
         <div className="title">
           Game Over!
         </div>
@@ -23,4 +23,4 @@ class ScoreShow extends React.Component {
   }
 }
 
-export default ScoreShow;
+export default GameOver;

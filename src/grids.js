@@ -6,12 +6,12 @@ class grids extends React.Component {
     const index = this.props.index;
     const gridsData = this.props.gridsData;
     const grid = this.props.gridsData[index];
-    const flagElement = <i className="iconfont iconhighest"></i>;
+    let elementClass = "";
     let color;
 
     if (Array.isArray(gridsData) && gridsData.length > 0){
       if(grid.flag && grid.isOpen === false){
-        element = flagElement;
+        element = <i className="iconfont iconhighest"></i>;
       }else{
         switch (grid.type) {
           case 'mine':
@@ -22,30 +22,37 @@ class grids extends React.Component {
             );
             break;
           case 'default':
-            // color switcher
-            switch (grid.value) {
-              case 1:
-                color = 'blue';
-                break;
-              case 2:
-                color = 'green';
-                break;
-              case 3:
-                color = 'red';
-                break;
-              case 4:
-                color = 'purple';
-                break;
-              case 5:
-                color = 'orange';
-                break;
-              default:
-                color = 'black'
-                break;
-            }
+            // if(grid.isOpen === false && grid.isSink) {
+            //   elementClass = 'grid-item'
+            // }
             // create this gird element
-            let elementClass = "grid-item-box";
+            if(grid.value){
+              // color switcher
+              switch (grid.value) {
+                case 1:
+                  color = 'blue';
+                  break;
+                case 2:
+                  color = 'green';
+                  break;
+                case 3:
+                  color = 'red';
+                  break;
+                case 4:
+                  color = 'purple';
+                  break;
+                case 5:
+                  color = 'orange';
+                  break;
+                default:
+                  color = 'black'
+                  break;
+              }
+            }
+
+            elementClass = "grid-item-box";
             elementClass += grid.value ? ' number-hover' : '';
+
             element = grid.isOpen && (
               <div
                 className={elementClass}
@@ -56,9 +63,15 @@ class grids extends React.Component {
                 {grid.value || ''}
               </div>
             )
+
             break;
           default:
             break;
+        }
+
+        if(!element && grid.isSink){
+          console.log(11)
+          element = <div className='grid-sink'></div>
         }
       }
     }
