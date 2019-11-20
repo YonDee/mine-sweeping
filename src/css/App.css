@@ -168,17 +168,36 @@ select {
   height: 100%;
   justify-content: center;
   align-items: center;
-  background: rgba(251, 255, 27, 0.5);
   flex-direction: column;
 }
 
+
 .score-show .title {
   font-size: 30px;
-  color: red;
   text-shadow: 0 0 1px #000;
+  opacity:0.8;
+}
+
+.score-show button {
   opacity:0.8;
 }
 
 .score-show > div{
   margin-bottom: 20px;
+}
+
+.game-over{
+  background: rgba(251, 255, 27, 0.5);
+}
+
+.game-over .title {
+  color: red;
+}
+
+.game-win {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.game-win .title {
+  color: green;
 }

@@ -22,9 +22,6 @@ class grids extends React.Component {
             );
             break;
           case 'default':
-            // if(grid.isOpen === false && grid.isSink) {
-            //   elementClass = 'grid-item'
-            // }
             // create this gird element
             if(grid.value){
               // color switcher
@@ -70,7 +67,6 @@ class grids extends React.Component {
         }
 
         if(!element && grid.isSink){
-          console.log(11)
           element = <div className='grid-sink'></div>
         }
       }

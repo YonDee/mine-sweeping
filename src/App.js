@@ -94,7 +94,6 @@ class App extends React.Component{
       gridsData[i].isOpen = true;
     }
 
-    // 统计flag的数量，如果满足当前数字数量直接翻开，如果标记错误直接游戏结束
     const conditionOfVictory = {
       dangers: [],
       unprocessed: [],
@@ -117,7 +116,12 @@ class App extends React.Component{
       conditionOfVictory.unprocessed.length === 0 &&
       conditionOfVictory.flags.length == conditionOfVictory.mines
     ){
-      alert('win!')
+      this.setState({
+        gameInformation: {
+          isWin: true
+        },
+        scoreShow: true
+      })
     }
 
     this.setState({
@@ -202,6 +206,7 @@ class App extends React.Component{
     const gridsData = this.state.gridsData;
     const grid = gridsData[index];
     let noSafes = [];
+    let flags = [];
     if(grid.isOpen && grid.value > 0){
       const aroundGridIndex = this.state.calculation.getAroundGridIndex(
         index,
@@ -212,15 +217,19 @@ class App extends React.Component{
       noSafes = aroundGridIndex.filter(index => {
         return gridsData[index].type === 'mine' && gridsData[index].flag === false;
       })
+
+      flags = aroundGridIndex.filter(index => {
+        return gridsData[index].flag === true;
+      })
+
+      console.log('找出这些下标？')
       console.log(noSafes)  // 这里是答案 :x
 
       aroundGridIndex.forEach(i => {
         gridsData[i].isSink = false;
-        if(noSafes.length === 0){
+        if(flags.length == grid.value) {
           if(gridsData[i].flag === false){
             gridsData[i].isOpen = true;
-          }
-          if(gridsData[i].value === 0){
             this.handleClick({button: 1}, i, gridsData)
           }
         }
@@ -331,6 +340,7 @@ class App extends React.Component{
             <ScoreShow
               scoreShow={this.state.scoreShow}
               gameAgain={() => this.handleSubmit()}
+              gameInformation = {this.state.gameInformation}
             />
             {[...Array(!isNaN(gridsMax) && gridsMax).keys()].map(index =>
               <div
