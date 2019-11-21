@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/mine-sweeping/static/css/main.6592d5c2.chunk.css",
+    "main.js": "/mine-sweeping/static/js/main.7cbffb3c.chunk.js",
+    "main.js.map": "/mine-sweeping/static/js/main.7cbffb3c.chunk.js.map",
+    "runtime-main.js": "/mine-sweeping/static/js/runtime-main.8ab9e005.js",
+    "runtime-main.js.map": "/mine-sweeping/static/js/runtime-main.8ab9e005.js.map",
+    "static/js/2.d96daa08.chunk.js": "/mine-sweeping/static/js/2.d96daa08.chunk.js",
+    "static/js/2.d96daa08.chunk.js.map": "/mine-sweeping/static/js/2.d96daa08.chunk.js.map",
+    "index.html": "/mine-sweeping/index.html",
+    "precache-manifest.5b6e207af904fe67c42b642e3f7439a3.js": "/mine-sweeping/precache-manifest.5b6e207af904fe67c42b642e3f7439a3.js",
+    "service-worker.js": "/mine-sweeping/service-worker.js",
+    "static/css/main.6592d5c2.chunk.css.map": "/mine-sweeping/static/css/main.6592d5c2.chunk.css.map",
+    "static/media/App.css": "/mine-sweeping/static/media/PressStart2P.62db3b87.woff",
+    "static/media/iconfont.css": "/mine-sweeping/static/media/iconfont.d01481de.eot"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8ab9e005.js",
+    "static/js/2.d96daa08.chunk.js",
+    "static/css/main.6592d5c2.chunk.css",
+    "static/js/main.7cbffb3c.chunk.js"
+  ]
+}
